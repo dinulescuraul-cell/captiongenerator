@@ -1,12 +1,14 @@
-function setTone(value) {
+function setTone(value, event) {
   document.getElementById("tone").value = value;
 
-  // visual active state for chips
   document.querySelectorAll(".chips button").forEach(btn => {
     btn.classList.remove("active");
+  });
 
-    if (btn.textContent.toLowerCase().includes(value)) {
-      btn.classList.add("active");
+  if (event && event.target) {
+    event.target.classList.add("active");
+  }
+}
     }
   });
 }
