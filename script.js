@@ -1,9 +1,22 @@
+function setTone(value) {
+  document.getElementById("tone").value = value;
+
+  // visual active state for chips
+  document.querySelectorAll(".chips button").forEach(btn => {
+    btn.classList.remove("active");
+
+    if (btn.textContent.toLowerCase().includes(value)) {
+      btn.classList.add("active");
+    }
+  });
+}
+
 async function generateCaptions() {
   const type = document.getElementById("type").value;
   const tone = document.getElementById("tone").value;
   const output = document.getElementById("output");
 
-  output.innerText = "Generating captions...";
+  output.innerHTML = "Generating captions... ✨";
 
   try {
     const response = await fetch("/api/generate", {
@@ -17,20 +30,51 @@ async function generateCaptions() {
     const data = await response.json();
 
     if (data.error) {
-      output.innerText = "Error: " + JSON.stringify(data.error);
+      output.innerHTML = "Error: " + JSON.stringify(data.error);
       return;
     }
 
-    if (data.choices && data.choices[0]) {
-      output.innerText = data.choices[0].message.content;
-    } else {
-      output.innerText = "Unexpected response from server.";
+    if (!data.choices || !data.choices[0]) {
+      output.innerHTML = "Unexpected response from server.";
       console.log(data);
+      return;
     }
 
+    // raw captions text
+    const text = data.choices[0].message.content;
+
+    // split into lines
+    const lines = text
+      .split("\n")
+      .map(l => l.replace(/^\d+[\.\)]\s*/, "").trim())
+      .filter(Boolean);
+
+    // clear output
+    output.innerHTML = "";
+
+    // create caption cards
+    lines.forEach((caption) => {
+      const box = document.createElement("div");
+      box.className = "caption";
+
+      const textSpan = document.createElement("span");
+      textSpan.innerText = caption;
+
+      const btn = document.createElement("button");
+      btn.innerText = "Copy";
+
+      btn.onclick = () => {
+        navigator.clipboard.writeText(caption);
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = "Copy", 1000);
+      };
+
+      box.appendChild(textSpan);
+      box.appendChild(btn);
+      output.appendChild(box);
+    });
+
   } catch (err) {
-    output.innerText = "Request failed: " + err.message;
+    output.innerHTML = "Request failed: " + err.message;
   }
-}function setTone(value) {
-  document.getElementById("tone").value = value;
 }
