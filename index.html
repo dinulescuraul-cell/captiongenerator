@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Caption Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Caption Generator</h1>
+
+    <p>Choose video type</p>
+    <select id="type">
+      <option value="dancing">Dancing</option>
+      <option value="cosplay">Cosplay</option>
+      <option value="goth">Goth</option>
+      <option value="plus size">Plus Size</option>
+      <option value="normal girl">Normal Girl</option>
+    </select>
+
+    <p>Choose tone</p>
+    <select id="tone">
+      <option value="comment bait">Comment Bait</option>
+      <option value="flirty">Flirty</option>
+      <option value="funny">Funny</option>
+      <option value="mysterious">Mysterious</option>
+      <option value="confident">Confident</option>
+      <option value="playful">Playful</option>
+      <option value="bratty">Bratty</option>
+    </select>
+
+    <button onclick="generateCaptions()">Generate Captions</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
