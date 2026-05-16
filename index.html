@@ -26,6 +26,20 @@
       </select>
     </div>
 
+    <!-- PLATFORM TABS -->
+    <div class="section">
+      <label>Platform</label>
+      <div class="chips">
+        <button id="tab-ig" class="active" onclick="setPlatform('instagram')">
+          📸 Instagram
+        </button>
+        <button id="tab-fb" onclick="setPlatform('facebook')">
+          📘 Facebook
+        </button>
+      </div>
+      <input type="hidden" id="platform" value="instagram">
+    </div>
+
     <!-- TONE -->
     <div class="section">
       <label>Tone</label>
@@ -40,14 +54,17 @@
       </div>
       <input type="hidden" id="tone" value="comment bait">
     </div>
-<div class="section">
-  <label>Number of Captions</label>
-  <select id="count">
-    <option value="10">10 captions</option>
-    <option value="25">25 captions</option>
-    <option value="50" selected>50 captions</option>
-  </select>
-</div>
+
+    <!-- COUNT -->
+    <div class="section">
+      <label>Number of Captions</label>
+      <select id="count">
+        <option value="10">10 captions</option>
+        <option value="25">25 captions</option>
+        <option value="50" selected>50 captions</option>
+      </select>
+    </div>
+
     <!-- BUTTON -->
     <button class="generate" onclick="generateCaptions()">
       Generate Captions ✨
