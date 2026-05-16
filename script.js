@@ -24,19 +24,24 @@ function toggleScoreMode() {
   document.getElementById("scoreModeBtn").classList.toggle("active");
 }
 
-// SCORE SYSTEM
+// IMPROVED SCORE SYSTEM (more realistic)
 function calculateScore(text) {
-  let score = 5;
+  let score = 4;
+
+  const words = text.trim().split(/\s+/);
 
   if (text.includes("?")) score += 2;
-  if (text.length <= 12) score += 2;
-  if (text.toLowerCase().includes("you")) score += 1;
-  if (text.toLowerCase().includes("would")) score += 1;
-  if (text.toLowerCase().includes("why")) score += 1;
+
+  if (words.length <= 8) score += 2;
+  else if (words.length <= 12) score += 1;
+
+  if (/(you|would|imagine|what if)/i.test(text)) score += 2;
+  if (/(secret|nobody|viral|don’t|never|lowkey)/i.test(text)) score += 1;
 
   return Math.min(score, 10);
 }
 
+// CREATE CAPTION CARD
 function createCaptionBox(caption, scoreMode) {
   const box = document.createElement("div");
   box.className = "caption";
@@ -48,9 +53,11 @@ function createCaptionBox(caption, scoreMode) {
 
   if (scoreMode) {
     const score = calculateScore(caption);
+
     const scoreTag = document.createElement("div");
     scoreTag.innerText = "🔥 " + score + "/10";
     scoreTag.className = "score";
+
     box.appendChild(scoreTag);
   }
 
@@ -60,7 +67,7 @@ function createCaptionBox(caption, scoreMode) {
   btn.onclick = () => {
     navigator.clipboard.writeText(caption);
     btn.innerText = "Copied!";
-    setTimeout(() => btn.innerText = "Copy", 1000);
+    setTimeout(() => (btn.innerText = "Copy"), 1000);
   };
 
   box.appendChild(btn);
@@ -68,6 +75,7 @@ function createCaptionBox(caption, scoreMode) {
   return box;
 }
 
+// MAIN GENERATION FUNCTION
 async function generateCaptions() {
   const type = document.getElementById("type").value;
   const tone = document.getElementById("tone").value;
@@ -104,8 +112,8 @@ async function generateCaptions() {
       return;
     }
 
-    const ig = data.instagram || [];
-    const fb = data.facebook || [];
+    const ig = Array.isArray(data.instagram) ? data.instagram : [];
+    const fb = Array.isArray(data.facebook) ? data.facebook : [];
 
     igOutput.innerHTML = "";
     fbOutput.innerHTML = "";
@@ -118,13 +126,15 @@ async function generateCaptions() {
       fbOutput.appendChild(createCaptionBox(caption, scoreMode));
     });
 
-    // BEST MODE FILTER
+    // BEST MODE SORTING
     if (bestMode) {
       const sortContainer = (container) => {
         const items = Array.from(container.children);
 
         items.sort((a, b) => {
-          return calculateScore(b.innerText) - calculateScore(a.innerText);
+          const aText = a.querySelector("span")?.innerText || "";
+          const bText = b.querySelector("span")?.innerText || "";
+          return calculateScore(bText) - calculateScore(aText);
         });
 
         container.innerHTML = "";
