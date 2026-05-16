@@ -11,19 +11,6 @@ function setTone(value, event) {
   }
 }
 
-function setPlatform(value) {
-  document.getElementById("platform").value = value;
-
-  document.getElementById("tab-ig").classList.remove("active");
-  document.getElementById("tab-fb").classList.remove("active");
-
-  if (value === "instagram") {
-    document.getElementById("tab-ig").classList.add("active");
-  } else {
-    document.getElementById("tab-fb").classList.add("active");
-  }
-}
-
 // TOGGLES
 function toggleBestMode() {
   const el = document.getElementById("bestMode");
@@ -117,7 +104,6 @@ async function generateCaptions() {
       return;
     }
 
-    // 🚀 NEW JSON SYSTEM
     const ig = data.instagram || [];
     const fb = data.facebook || [];
 
@@ -132,15 +118,13 @@ async function generateCaptions() {
       fbOutput.appendChild(createCaptionBox(caption, scoreMode));
     });
 
-    // BEST MODE (frontend safety filter fallback)
+    // BEST MODE FILTER
     if (bestMode) {
       const sortContainer = (container) => {
         const items = Array.from(container.children);
 
         items.sort((a, b) => {
-          const aText = a.innerText;
-          const bText = b.innerText;
-          return calculateScore(bText) - calculateScore(aText);
+          return calculateScore(b.innerText) - calculateScore(a.innerText);
         });
 
         container.innerHTML = "";
