@@ -1,97 +1,117 @@
+const prompt = `
+You are an elite female social media strategist creating viral captions for women creators.
 
-export default async function handler(req, res) {
-  try {
-    const { type, tone, count, bestMode } = req.body;
+Your captions should feel like REAL modern Instagram, TikTok, Facebook Reels captions written by attractive female creators.
 
-    const prompt = `
-You are an elite viral social media strategist.
+Generate EXACTLY ${count} Instagram captions AND EXACTLY ${count} Facebook captions.
 
-Generate EXACTLY:
-- 10 Instagram captions
-- 10 Facebook captions
+CONTENT STYLE:
+The creator is:
+- feminine
+- attractive
+- confident
+- playful
+- emotionally expressive
+- attention-grabbing
+- sometimes flirty
+- sometimes bratty
+- internet/social-media aware
 
-Video type: ${type}
-Tone: ${tone}
+Video category:
+${type}
 
-VERY IMPORTANT RULES:
-- max 12 words per caption
-- NO explanations
-- NO intro text
-- NO numbering in output text
-- ONLY return valid JSON
+Tone:
+${tone}
+
+INSTAGRAM STYLE:
+Instagram captions should feel:
+- aesthetic
+- emotionally addictive
+- soft flex energy
+- feminine
+- vibe-based
+- slightly mysterious
+- subtle attention bait
+- modern Gen Z wording
+- lowercase casual texting style
+
+FACEBOOK STYLE:
+Facebook captions should feel:
+- stronger engagement bait
+- opinion triggering
+- curiosity driven
+- more direct
+- optimized for comments/shares
+- emotionally reactive
+- slightly dramatic
+
+VERY IMPORTANT:
+Avoid:
+- boomersounding captions
+- corporate wording
+- fake motivational quotes
+- generic positivity
+- repetitive hooks
+- AI sounding phrasing
+- cringe slang overuse
+
+GOOD EXAMPLES OF STYLE:
+- "be honest… would you fold instantly? 😭"
+- "why is this actually my personality"
+- "this angle is dangerous"
+- "i just know somebody’s obsessed"
+- "cute or too much?"
+- "lowkey feeling myself here"
+- "not me rewatching this 20 times"
+- "which friend would post this?"
+- "this comment section might be dangerous"
+- "somebody tell me why this hits"
+
+CAPTION RULES:
+- MAX 12 words
+- short punchy rhythm
+- highly readable
+- emotionally reactive
+- scroll-stopping
+- no hashtags
+- no emojis spam
+- occasional emojis allowed naturally
+- vary sentence structure heavily
+- DO NOT repeat hook formats
+
+ENGAGEMENT PSYCHOLOGY:
+The captions should trigger:
+- curiosity
+- attraction
+- relatability
+- ego reaction
+- comments
+- arguments
+- flirting
+- emotional projection
 
 ${bestMode === "true" ? `
 BEST MODE ENABLED:
-- only highly viral captions
-- remove weak/generic ideas
-- prioritize emotional + curiosity + engagement
+ONLY output your strongest captions.
+Every caption should feel post-worthy instantly.
+Remove weak/generic captions completely.
 ` : ""}
 
-OUTPUT FORMAT (STRICT JSON ONLY):
+OUTPUT FORMAT:
+Return ONLY valid JSON.
 
 {
   "instagram": [
-    "caption 1",
-    "caption 2",
-    "caption 3",
-    "caption 4",
-    "caption 5",
-    "caption 6",
-    "caption 7",
-    "caption 8",
-    "caption 9",
-    "caption 10"
+    "caption here",
+    "caption here"
   ],
   "facebook": [
-    "caption 1",
-    "caption 2",
-    "caption 3",
-    "caption 4",
-    "caption 5",
-    "caption 6",
-    "caption 7",
-    "caption 8",
-    "caption 9",
-    "caption 10"
+    "caption here",
+    "caption here"
   ]
 }
+
+NO markdown.
+NO explanations.
+ONLY raw JSON.
 `;
-
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        messages: [{ role: "user", content: prompt }],
-        temperature: bestMode === "true" ? 0.8 : 0.9
-      })
-    });
-
-    const data = await response.json();
-
-    const raw = data.choices?.[0]?.message?.content;
-
-    if (!raw) {
-      return res.status(500).json({ error: "No model output" });
-    }
-
-    let parsed;
-
-    try {
-      parsed = JSON.parse(raw);
-    } catch (err) {
-      return res.status(500).json({
-        error: "Invalid JSON from AI",
-        raw
-      });
-    }
-
-    res.status(200).json(parsed);
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-}
