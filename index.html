@@ -26,20 +26,6 @@
       </select>
     </div>
 
-    <!-- PLATFORM TABS -->
-    <div class="section">
-      <label>Platform Mode</label>
-      <div class="chips">
-        <button id="tab-ig" class="active" onclick="setPlatform('instagram')">
-          📸 Instagram
-        </button>
-        <button id="tab-fb" onclick="setPlatform('facebook')">
-          📘 Facebook
-        </button>
-      </div>
-      <input type="hidden" id="platform" value="instagram">
-    </div>
-
     <!-- TONE -->
     <div class="section">
       <label>Tone</label>
@@ -65,7 +51,7 @@
       </select>
     </div>
 
-    <!-- TOGGLES (NEW FEATURES) -->
+    <!-- ADVANCED TOGGLES -->
     <div class="section">
       <label>Advanced Mode</label>
 
@@ -83,21 +69,21 @@
       <input type="hidden" id="scoreMode" value="false">
     </div>
 
-    <!-- BUTTON -->
+    <!-- GENERATE BUTTON -->
     <button class="generate" onclick="generateCaptions()">
       Generate Captions ✨
     </button>
 
-    <!-- SPLIT OUTPUT (NEW STRUCTURE) -->
+    <!-- OUTPUT SPLIT -->
     <div class="split-container">
 
       <div class="panel ig-panel">
-        <h2>📸 Instagram</h2>
+        <h2>📸 Instagram Captions</h2>
         <div id="ig-output"></div>
       </div>
 
       <div class="panel fb-panel">
-        <h2>📘 Facebook</h2>
+        <h2>📘 Facebook Captions</h2>
         <div id="fb-output"></div>
       </div>
 
