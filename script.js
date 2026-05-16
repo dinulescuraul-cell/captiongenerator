@@ -31,4 +31,6 @@ async function generateCaptions() {
   } catch (err) {
     output.innerText = "Request failed: " + err.message;
   }
+}function setTone(value) {
+  document.getElementById("tone").value = value;
 }
