@@ -24,22 +24,20 @@ function setPlatform(value) {
   }
 }
 
-// NEW TOGGLES
+// TOGGLES
 function toggleBestMode() {
   const el = document.getElementById("bestMode");
   el.value = el.value === "true" ? "false" : "true";
-
   document.getElementById("bestModeBtn").classList.toggle("active");
 }
 
 function toggleScoreMode() {
   const el = document.getElementById("scoreMode");
   el.value = el.value === "true" ? "false" : "true";
-
   document.getElementById("scoreModeBtn").classList.toggle("active");
 }
 
-// SIMPLE VIRAL SCORE FUNCTION
+// SCORE SYSTEM
 function calculateScore(text) {
   let score = 5;
 
@@ -52,11 +50,41 @@ function calculateScore(text) {
   return Math.min(score, 10);
 }
 
+function createCaptionBox(caption, scoreMode) {
+  const box = document.createElement("div");
+  box.className = "caption";
+
+  const textSpan = document.createElement("span");
+  textSpan.innerText = caption;
+
+  box.appendChild(textSpan);
+
+  if (scoreMode) {
+    const score = calculateScore(caption);
+    const scoreTag = document.createElement("div");
+    scoreTag.innerText = "🔥 " + score + "/10";
+    scoreTag.className = "score";
+    box.appendChild(scoreTag);
+  }
+
+  const btn = document.createElement("button");
+  btn.innerText = "Copy";
+
+  btn.onclick = () => {
+    navigator.clipboard.writeText(caption);
+    btn.innerText = "Copied!";
+    setTimeout(() => btn.innerText = "Copy", 1000);
+  };
+
+  box.appendChild(btn);
+
+  return box;
+}
+
 async function generateCaptions() {
   const type = document.getElementById("type").value;
   const tone = document.getElementById("tone").value;
-  const count = document.getElementById("count")?.value || 50;
-  const platform = document.getElementById("platform")?.value || "instagram";
+  const count = parseInt(document.getElementById("count")?.value || 10);
 
   const bestMode = document.getElementById("bestMode").value === "true";
   const scoreMode = document.getElementById("scoreMode").value === "true";
@@ -73,7 +101,12 @@ async function generateCaptions() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ type, tone, count, platform, bestMode })
+      body: JSON.stringify({
+        type,
+        tone,
+        count,
+        bestMode
+      })
     });
 
     const data = await response.json();
@@ -84,92 +117,38 @@ async function generateCaptions() {
       return;
     }
 
-    if (!data.choices || !data.choices[0]) {
-      igOutput.innerHTML = "Unexpected response from server.";
-      fbOutput.innerHTML = "";
-      console.log(data);
-      return;
-    }
-
-    const text = data.choices[0].message.content;
-
-    const lines = text
-      .split("\n")
-      .map(l => l.replace(/^\d+[\.\)]\s*/, "").trim())
-      .filter(l => {
-        const lower = l.toLowerCase();
-
-        if (
-          lower.includes("here are") ||
-          lower.includes("captions") ||
-          lower.includes("output") ||
-          lower.includes("sure") ||
-          lower.includes("below")
-        ) {
-          return false;
-        }
-
-        return l.length > 0;
-      })
-      .slice(0, parseInt(count));
+    // 🚀 NEW JSON SYSTEM
+    const ig = data.instagram || [];
+    const fb = data.facebook || [];
 
     igOutput.innerHTML = "";
     fbOutput.innerHTML = "";
 
-    lines.forEach((caption) => {
-      const box = document.createElement("div");
-      box.className = "caption";
-
-      const textSpan = document.createElement("span");
-      textSpan.innerText = caption;
-
-      // SCORE
-      if (scoreMode) {
-        const score = calculateScore(caption);
-
-        const scoreTag = document.createElement("div");
-        scoreTag.innerText = "🔥 " + score + "/10";
-        scoreTag.className = "score";
-
-        box.appendChild(scoreTag);
-      }
-
-      const btn = document.createElement("button");
-      btn.innerText = "Copy";
-
-      btn.onclick = () => {
-        navigator.clipboard.writeText(caption);
-        btn.innerText = "Copied!";
-        setTimeout(() => btn.innerText = "Copy", 1000);
-      };
-
-      box.appendChild(textSpan);
-      box.appendChild(btn);
-
-      // SPLIT LOGIC (simple but clean)
-      if (platform === "instagram") {
-        igOutput.appendChild(box);
-      } else {
-        fbOutput.appendChild(box);
-      }
+    ig.slice(0, count).forEach(caption => {
+      igOutput.appendChild(createCaptionBox(caption, scoreMode));
     });
 
-    // BEST MODE FILTER (optional cleanup)
+    fb.slice(0, count).forEach(caption => {
+      fbOutput.appendChild(createCaptionBox(caption, scoreMode));
+    });
+
+    // BEST MODE (frontend safety filter fallback)
     if (bestMode) {
-      const filterTop = (container) => {
-        const items = Array.from(container.querySelectorAll(".caption"));
+      const sortContainer = (container) => {
+        const items = Array.from(container.children);
+
         items.sort((a, b) => {
-          const aScore = calculateScore(a.innerText);
-          const bScore = calculateScore(b.innerText);
-          return bScore - aScore;
+          const aText = a.innerText;
+          const bText = b.innerText;
+          return calculateScore(bText) - calculateScore(aText);
         });
 
         container.innerHTML = "";
-        items.slice(0, Math.min(10, items.length)).forEach(i => container.appendChild(i));
+        items.slice(0, 10).forEach(i => container.appendChild(i));
       };
 
-      filterTop(igOutput);
-      filterTop(fbOutput);
+      sortContainer(igOutput);
+      sortContainer(fbOutput);
     }
 
   } catch (err) {
