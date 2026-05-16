@@ -1,10 +1,24 @@
-export default function handler(req, res) {
-  const key = process.env.GROQ_API_KEY;
+export default async function handler(req, res) {
+  const { type, tone } = req.body;
 
-  return res.status(200).json({
-    exists: !!key,
-    length: key ? key.length : 0,
-    starts_correctly: key ? key.startsWith("gsk_") : false,
-    preview: key ? key.slice(0, 8) : null
+  const prompt = `Generate 10 captions for ${type} in ${tone} style.`;
+
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: "llama-3.1-8b-instant",
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+
+  const text = await response.text(); // IMPORTANT CHANGE
+
+  return res.status(response.status).json({
+    status: response.status,
+    raw: text
   });
 }
