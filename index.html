@@ -28,7 +28,7 @@
 
     <!-- PLATFORM TABS -->
     <div class="section">
-      <label>Platform</label>
+      <label>Platform Mode</label>
       <div class="chips">
         <button id="tab-ig" class="active" onclick="setPlatform('instagram')">
           📸 Instagram
@@ -65,13 +65,43 @@
       </select>
     </div>
 
+    <!-- TOGGLES (NEW FEATURES) -->
+    <div class="section">
+      <label>Advanced Mode</label>
+
+      <div class="chips">
+        <button id="bestModeBtn" onclick="toggleBestMode()">
+          🔥 Best Captions Only
+        </button>
+
+        <button id="scoreModeBtn" onclick="toggleScoreMode()">
+          📊 Engagement Score
+        </button>
+      </div>
+
+      <input type="hidden" id="bestMode" value="false">
+      <input type="hidden" id="scoreMode" value="false">
+    </div>
+
     <!-- BUTTON -->
     <button class="generate" onclick="generateCaptions()">
       Generate Captions ✨
     </button>
 
-    <!-- OUTPUT -->
-    <div id="output"></div>
+    <!-- SPLIT OUTPUT (NEW STRUCTURE) -->
+    <div class="split-container">
+
+      <div class="panel ig-panel">
+        <h2>📸 Instagram</h2>
+        <div id="ig-output"></div>
+      </div>
+
+      <div class="panel fb-panel">
+        <h2>📘 Facebook</h2>
+        <div id="fb-output"></div>
+      </div>
+
+    </div>
 
   </div>
 
