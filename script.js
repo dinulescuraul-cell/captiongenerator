@@ -11,12 +11,29 @@ function setTone(value, event) {
   }
 }
 
+function setPlatform(value) {
+  document.getElementById("platform").value = value;
+
+  document.getElementById("tab-ig").classList.remove("active");
+  document.getElementById("tab-fb").classList.remove("active");
+
+  if (value === "instagram") {
+    document.getElementById("tab-ig").classList.add("active");
+  } else {
+    document.getElementById("tab-fb").classList.add("active");
+  }
+}
+
 async function generateCaptions() {
   const type = document.getElementById("type").value;
   const tone = document.getElementById("tone").value;
   const count = document.getElementById("count") 
     ? document.getElementById("count").value 
     : 50;
+
+  const platform = document.getElementById("platform") 
+    ? document.getElementById("platform").value 
+    : "instagram";
 
   const output = document.getElementById("output");
 
@@ -28,7 +45,7 @@ async function generateCaptions() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ type, tone, count })
+      body: JSON.stringify({ type, tone, count, platform })
     });
 
     const data = await response.json();
