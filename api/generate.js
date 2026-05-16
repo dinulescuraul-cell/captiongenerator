@@ -1,4 +1,8 @@
-const prompt = `
+export default async function handler(req, res) {
+  try {
+    const { type, tone, count, bestMode } = req.body;
+
+    const prompt = `
 You are an elite female social media strategist creating viral captions for women creators.
 
 Your captions must feel like REAL captions written by successful female creators on:
@@ -89,11 +93,12 @@ The captions should trigger:
 - relatability
 - debate
 
-${bestMode === "true" ? `
+${bestMode === true ? `
 BEST MODE ENABLED:
-ONLY output your strongest captions.
-Every caption must feel instantly post-worthy.
-Remove weak or generic captions completely.
+- ONLY output your strongest captions
+- Every caption must feel instantly post-worthy
+- Remove weak or generic captions completely
+- Prioritize emotional impact and engagement
 ` : ""}
 
 CRITICAL OUTPUT RULES:
@@ -119,3 +124,65 @@ VALID JSON FORMAT:
   ]
 }
 `;
+
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          temperature: bestMode ? 0.8 : 0.9,
+          messages: [
+            {
+              role: "user",
+              content: prompt
+            }
+          ]
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    // SAFETY CHECK
+    const raw = data?.choices?.[0]?.message?.content;
+
+    if (!raw) {
+      return res.status(500).json({
+        error: "No AI response received",
+        rawData: data
+      });
+    }
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      return res.status(500).json({
+        error: "AI returned invalid JSON",
+        raw
+      });
+    }
+
+    // FINAL CLEAN RESPONSE
+    res.status(200).json({
+      instagram: Array.isArray(parsed.instagram)
+        ? parsed.instagram
+        : [],
+
+      facebook: Array.isArray(parsed.facebook)
+        ? parsed.facebook
+        : []
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    });
+  }
+}
