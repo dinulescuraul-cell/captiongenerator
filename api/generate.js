@@ -1,63 +1,60 @@
 
 export default async function handler(req, res) {
   try {
-    const { type, tone, count, platform, bestMode } = req.body;
+    const { type, tone, count, bestMode } = req.body;
 
     const prompt = `
-You are an elite social media strategist who writes viral captions that get engagement.
+You are an elite viral social media strategist.
 
-Generate EXACTLY ${count} captions.
+Generate EXACTLY:
+- 10 Instagram captions
+- 10 Facebook captions
 
 Video type: ${type}
 Tone: ${tone}
-Platform: ${platform}
 
 VERY IMPORTANT RULES:
 - max 12 words per caption
 - NO explanations
 - NO intro text
-- NO "here are captions"
-- start immediately with numbered list (1.)
-
-PLATFORM BEHAVIOR:
-
-IF platform = instagram:
-Write captions that feel:
-- aesthetic
-- emotionally soft
-- minimal but powerful
-- vibe-based, cinematic energy
-- subtle engagement (not aggressive)
-
-IF platform = facebook:
-Write captions that feel:
-- highly engaging
-- curiosity driven
-- comment bait style
-- questions, opinions, debate triggers
-- slightly more direct and loud
-
-CONTENT MIX:
-- hooks (questions / curiosity)
-- emotional lines
-- funny/light relatable lines
-- engagement triggers
+- NO numbering in output text
+- ONLY return valid JSON
 
 ${bestMode === "true" ? `
 BEST MODE ENABLED:
-- ONLY output your strongest viral captions
-- remove anything generic or low engagement
-- prioritize emotional + curiosity + shareability
+- only highly viral captions
+- remove weak/generic ideas
+- prioritize emotional + curiosity + engagement
 ` : ""}
 
-OUTPUT FORMAT:
-1. caption
-2. caption
-3. caption
-...
+OUTPUT FORMAT (STRICT JSON ONLY):
 
-IMPORTANT FINAL RULE:
-Only output the numbered captions. Nothing else.
+{
+  "instagram": [
+    "caption 1",
+    "caption 2",
+    "caption 3",
+    "caption 4",
+    "caption 5",
+    "caption 6",
+    "caption 7",
+    "caption 8",
+    "caption 9",
+    "caption 10"
+  ],
+  "facebook": [
+    "caption 1",
+    "caption 2",
+    "caption 3",
+    "caption 4",
+    "caption 5",
+    "caption 6",
+    "caption 7",
+    "caption 8",
+    "caption 9",
+    "caption 10"
+  ]
+}
 `;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -75,7 +72,24 @@ Only output the numbered captions. Nothing else.
 
     const data = await response.json();
 
-    res.status(200).json(data);
+    const raw = data.choices?.[0]?.message?.content;
+
+    if (!raw) {
+      return res.status(500).json({ error: "No model output" });
+    }
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(raw);
+    } catch (err) {
+      return res.status(500).json({
+        error: "Invalid JSON from AI",
+        raw
+      });
+    }
+
+    res.status(200).json(parsed);
 
   } catch (error) {
     res.status(500).json({ error: error.message });
