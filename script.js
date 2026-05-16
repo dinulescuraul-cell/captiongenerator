@@ -1,3 +1,4 @@
+
 function setTone(value, event) {
   document.getElementById("tone").value = value;
 
@@ -8,9 +9,6 @@ function setTone(value, event) {
   if (event && event.target) {
     event.target.classList.add("active");
   }
-}
-    }
-  });
 }
 
 async function generateCaptions() {
@@ -42,19 +40,15 @@ async function generateCaptions() {
       return;
     }
 
-    // raw captions text
     const text = data.choices[0].message.content;
 
-    // split into lines
     const lines = text
       .split("\n")
       .map(l => l.replace(/^\d+[\.\)]\s*/, "").trim())
       .filter(Boolean);
 
-    // clear output
     output.innerHTML = "";
 
-    // create caption cards
     lines.forEach((caption) => {
       const box = document.createElement("div");
       box.className = "caption";
