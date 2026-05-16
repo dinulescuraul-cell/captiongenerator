@@ -111,4 +111,8 @@ select, input {
   padding: 5px 10px;
   border-radius: 8px;
   cursor: pointer;
+}.chips button.active {
+  background: white;
+  color: black;
+  transform: scale(1.08);
 }
