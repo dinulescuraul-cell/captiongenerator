@@ -14,6 +14,10 @@ function setTone(value, event) {
 async function generateCaptions() {
   const type = document.getElementById("type").value;
   const tone = document.getElementById("tone").value;
+  const count = document.getElementById("count") 
+    ? document.getElementById("count").value 
+    : 50;
+
   const output = document.getElementById("output");
 
   output.innerHTML = "Generating captions... ✨";
@@ -24,7 +28,7 @@ async function generateCaptions() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ type, tone })
+      body: JSON.stringify({ type, tone, count })
     });
 
     const data = await response.json();
@@ -60,7 +64,8 @@ async function generateCaptions() {
         }
 
         return l.length > 0;
-      });
+      })
+      .slice(0, parseInt(count));
 
     output.innerHTML = "";
 
