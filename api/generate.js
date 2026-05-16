@@ -1,42 +1,63 @@
 
 export default async function handler(req, res) {
   try {
-    const { type, tone, count, platform } = req.body;
+    const { type, tone, count, platform, bestMode } = req.body;
 
     const prompt = `
-You are a professional social media strategist.
+You are an elite social media strategist who writes viral captions that get engagement.
 
-Generate ${count} viral captions.
+Generate EXACTLY ${count} captions.
 
 Video type: ${type}
 Tone: ${tone}
 Platform: ${platform}
 
-RULES:
+VERY IMPORTANT RULES:
 - max 12 words per caption
+- NO explanations
 - NO intro text
-- start directly with 1.
+- NO "here are captions"
+- start immediately with numbered list (1.)
 
-PLATFORM STYLE RULES:
+PLATFORM BEHAVIOR:
 
 IF platform = instagram:
-- aesthetic, emotional, minimal, vibe-based
-- soft hooks, aesthetic energy, subtle engagement
+Write captions that feel:
+- aesthetic
+- emotionally soft
+- minimal but powerful
+- vibe-based, cinematic energy
+- subtle engagement (not aggressive)
 
 IF platform = facebook:
-- strong engagement, curiosity hooks, comment bait
-- questions, opinions, controversial curiosity
+Write captions that feel:
+- highly engaging
+- curiosity driven
+- comment bait style
+- questions, opinions, debate triggers
+- slightly more direct and loud
 
-CONTENT STRUCTURE:
-Mix:
+CONTENT MIX:
 - hooks (questions / curiosity)
-- emotional captions
-- funny captions
-- engagement bait
+- emotional lines
+- funny/light relatable lines
+- engagement triggers
 
-IMPORTANT:
-Only output ${count} captions.
-No explanations. No intro text.
+${bestMode === "true" ? `
+BEST MODE ENABLED:
+- ONLY output your strongest viral captions
+- remove anything generic or low engagement
+- prioritize emotional + curiosity + shareability
+` : ""}
+
+OUTPUT FORMAT:
+1. caption
+2. caption
+3. caption
+...
+
+IMPORTANT FINAL RULE:
+Only output the numbered captions. Nothing else.
 `;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -47,11 +68,13 @@ No explanations. No intro text.
       },
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
-        messages: [{ role: "user", content: prompt }]
+        messages: [{ role: "user", content: prompt }],
+        temperature: bestMode === "true" ? 0.8 : 0.9
       })
     });
 
     const data = await response.json();
+
     res.status(200).json(data);
 
   } catch (error) {
