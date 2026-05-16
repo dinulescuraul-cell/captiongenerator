@@ -45,7 +45,22 @@ async function generateCaptions() {
     const lines = text
       .split("\n")
       .map(l => l.replace(/^\d+[\.\)]\s*/, "").trim())
-      .filter(Boolean);
+      .filter(l => {
+        const lower = l.toLowerCase();
+
+        // remove AI intro/outro noise
+        if (
+          lower.includes("here are") ||
+          lower.includes("captions") ||
+          lower.includes("output") ||
+          lower.includes("sure") ||
+          lower.includes("below")
+        ) {
+          return false;
+        }
+
+        return l.length > 0;
+      });
 
     output.innerHTML = "";
 
