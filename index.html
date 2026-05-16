@@ -2,43 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Caption Generator</title>
+  <title>Caption Generator Pro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="container">
-    <h1>Caption Generator</h1>
+  <div class="bg"></div>
 
-    <p>Choose video type</p>
-    <select id="type">
-      <option value="dancing">Dancing</option>
-      <option value="cosplay">Cosplay</option>
-      <option value="goth">Goth</option>
-      <option value="plus size">Plus Size</option>
-      <option value="normal girl">Normal Girl</option>
-    </select>
+  <div class="app">
 
-    <p>Choose tone</p>
-    <select id="tone">
-      <option value="comment bait">Comment Bait</option>
-      <option value="flirty">Flirty</option>
-      <option value="funny">Funny</option>
-      <option value="mysterious">Mysterious</option>
-      <option value="confident">Confident</option>
-      <option value="playful">Playful</option>
-      <option value="bratty">Bratty</option>
-    </select>
+    <h1>Caption Generator Pro</h1>
+    <p class="subtitle">AI-powered viral captions for Instagram & Facebook</p>
 
-    <p>Instagram style (optional)</p>
-    <input id="igStyle" placeholder="e.g. aesthetic, trendy, minimal, vibe-based" />
+    <!-- TYPE -->
+    <div class="section">
+      <label>Video Type</label>
+      <select id="type">
+        <option value="dancing">Dancing</option>
+        <option value="cosplay">Cosplay</option>
+        <option value="goth">Goth</option>
+        <option value="plus size">Plus Size</option>
+        <option value="normal girl">Normal Girl</option>
+      </select>
+    </div>
 
-    <p>Facebook style (optional)</p>
-    <input id="fbStyle" placeholder="e.g. comment bait, emotional, viral hooks" />
+    <!-- TONE -->
+    <div class="section">
+      <label>Tone</label>
+      <div class="chips">
+        <button onclick="setTone('comment bait')">🔥 Comment Bait</button>
+        <button onclick="setTone('flirty')">😏 Flirty</button>
+        <button onclick="setTone('funny')">😂 Funny</button>
+        <button onclick="setTone('mysterious')">🖤 Mysterious</button>
+        <button onclick="setTone('confident')">💪 Confident</button>
+        <button onclick="setTone('playful')">😊 Playful</button>
+        <button onclick="setTone('bratty')">😈 Bratty</button>
+      </div>
+      <input type="hidden" id="tone" value="comment bait">
+    </div>
 
-    <button onclick="generateCaptions()">Generate Captions</button>
+    <!-- BUTTON -->
+    <button class="generate" onclick="generateCaptions()">
+      Generate Captions ✨
+    </button>
 
+    <!-- OUTPUT -->
     <div id="output"></div>
+
   </div>
 
   <script src="script.js"></script>
